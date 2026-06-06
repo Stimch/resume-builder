@@ -14,7 +14,5 @@ if (import.meta.env.MODE === 'development') {
 import { createRoot } from 'react-dom/client';
 
 createRoot(document.getElementById('root')!).render(
-  <div>
-    <h1>TEST OK</h1>
-  </div>
+  <h1>TEST OK</h1>
 );
