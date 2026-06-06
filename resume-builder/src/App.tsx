@@ -22,23 +22,54 @@ export const App = () => {
   const [popout, setPopout] = useState<ReactNode | null>(<ScreenSpinner />);
   const [snackbar, setSnackbar] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function init() {
+useEffect(() => {
+  async function init() {
+    console.log("INIT START");
+
+    try {
+      console.log("LOAD RESUMES...");
+      const savedResumes = await loadResumes();
+
+      console.log("LOAD POINTS...");
+      const savedPoints = await loadPoints();
+
+      console.log("GET USER...");
+      let vkUser = undefined;
+
       try {
-        const [savedResumes, savedPoints, vkUser] = await Promise.all([
-          loadResumes(),
-          loadPoints(),
-          bridge.send('VKWebAppGetUserInfo').catch(() => undefined),
-        ]);
-        setResumes(savedResumes);
-        setPoints(savedPoints);
-        setUser(vkUser);
-      } finally {
-        setPopout(null);
+        if (bridge.isWebView()) {
+          vkUser = await Promise.race([
+            bridge.send('VKWebAppGetUserInfo'),
+            new Promise((resolve) =>
+              setTimeout(() => resolve(undefined), 3000)
+            ),
+          ]);
+        }
+      } catch (e) {
+        console.error(e);
       }
+      //const vkUser = await bridge
+      //  .send('VKWebAppGetUserInfo')
+      //  .catch((e) => {
+      //    console.error("USER ERROR", e);
+      //    return undefined;
+      //  });
+
+      console.log("DATA LOADED");
+
+      setResumes(savedResumes);
+      setPoints(savedPoints);
+      setUser(vkUser);
+    } catch (e) {
+      console.error("INIT ERROR", e);
+    } finally {
+      console.log("INIT END");
+      setPopout(null);
     }
-    init();
-  }, []);
+  }
+
+  init();
+}, []);
 
   const goHome = () => setPanel('home');
 
