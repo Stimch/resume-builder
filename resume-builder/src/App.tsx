@@ -34,20 +34,18 @@ useEffect(() => {
       const savedPoints = await loadPoints();
 
       console.log("GET USER...");
-      let vkUser = undefined;
+
+      let vkUser: UserInfo | undefined = undefined;
 
       try {
         if (bridge.isWebView()) {
-          vkUser = await Promise.race([
-            bridge.send('VKWebAppGetUserInfo'),
-            new Promise((resolve) =>
-              setTimeout(() => resolve(undefined), 3000)
-            ),
-          ]);
+          vkUser = await bridge.send('VKWebAppGetUserInfo');
         }
       } catch (e) {
-        console.error(e);
+        console.error("USER ERROR", e);
       }
+
+      console.log("USER DONE", vkUser);
       //const vkUser = await bridge
       //  .send('VKWebAppGetUserInfo')
       //  .catch((e) => {
