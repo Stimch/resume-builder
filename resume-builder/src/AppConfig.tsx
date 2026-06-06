@@ -10,7 +10,15 @@ export const AppConfig = () => {
   const vkBridgeAppearance = useAppearance() || undefined;
   const vkBridgeInsets = useInsets() || undefined;
   const adaptivity = transformVKBridgeAdaptivity(useAdaptivity());
-  const { vk_platform } = parseURLSearchParamsForGetLaunchParams(window.location.search);
+  // const { vk_platform } = parseURLSearchParamsForGetLaunchParams(window.location.search);
+  let vk_platform;
+
+  try {
+    vk_platform =
+      parseURLSearchParamsForGetLaunchParams(window.location.search).vk_platform;
+  } catch (e) {
+    vk_platform = undefined;
+  }
 
   return (
     <ConfigProvider
